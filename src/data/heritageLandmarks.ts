@@ -37,7 +37,7 @@ export const HERITAGE_LANDMARKS: HeritageLandmark[] = [
     builtCentury: 'c. 1250 CE',
     patronRuler: 'King Narasimhadeva I',
     imageUrl:
-      'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=1200&q=80',
+      'https://www.dailyartmagazine.com/wp-content/uploads/2024/06/Cover-Photo-scaled.jpg',
     audioNarrativeTitle: 'The Celestial Sundials of the Kalinga Coast',
     audioDuration: '04:12',
     audioNarrativeExcerpt:
