@@ -117,7 +117,7 @@ export const HERITAGE_LANDMARKS: HeritageLandmark[] = [
     builtCentury: 'Completed 1010 CE',
     patronRuler: 'Rajaraja Chola I',
     imageUrl:
-      'https://cdn.britannica.com/66/250066-050-B34A9532/Brihadishvara-Temple-Thanjavur-Tamil-Nadu-India.jpg',
+      'https://images.unsplash.com/photo-1621252179027-94459d278660?auto=format&fit=crop&w=1200&q=80',
     audioNarrativeTitle: 'The Granite Monoliths of Kaveri',
     audioDuration: '03:45',
     audioNarrativeExcerpt:

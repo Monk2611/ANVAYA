@@ -1,6 +1,7 @@
 import React from 'react';
-import { Search, Compass, BookOpen, Sparkles, Map, Hourglass, ScrollText } from 'lucide-react';
+import { Search, Compass, BookOpen, Sparkles, Map, Hourglass, ScrollText, Languages } from 'lucide-react';
 import { ScreenType } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface HeaderProps {
   onOpenSearch: () => void;
@@ -17,11 +18,13 @@ export const Header: React.FC<HeaderProps> = ({
   currentScreen,
   onScreenChange,
 }) => {
-  const navItems: { id: ScreenType; label: string; icon: React.FC<{ className?: string }> }[] = [
-    { id: 'explore', label: 'Cartography', icon: Map },
-    { id: 'cultural', label: 'Culture', icon: Sparkles },
-    { id: 'chronology', label: 'Chronology', icon: Hourglass },
-    { id: 'dossiers', label: 'Dossier', icon: ScrollText },
+  const { language, toggleLanguage, t } = useLanguage();
+
+  const navItems: { id: ScreenType; labelKey: string; defaultLabel: string; icon: React.FC<{ className?: string }> }[] = [
+    { id: 'explore', labelKey: 'nav_cartography', defaultLabel: 'Cartography', icon: Map },
+    { id: 'cultural', labelKey: 'nav_culture', defaultLabel: 'Culture', icon: Sparkles },
+    { id: 'chronology', labelKey: 'nav_chronology', defaultLabel: 'Chronology', icon: Hourglass },
+    { id: 'dossiers', labelKey: 'nav_dossiers', defaultLabel: 'Dossier', icon: ScrollText },
   ];
 
   return (
@@ -42,10 +45,10 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => onScreenChange && onScreenChange('explore')}
                 className="font-serif-display font-bold text-xl tracking-tight text-[#191B21] leading-none cursor-pointer"
               >
-                ANVAYA
+                {t('app_name')}
               </span>
               <span className="hidden sm:inline-block label-caps px-1.5 py-0.5 bg-[#FFD7CE]/50 text-[#882B16] text-[9px] border border-[#A8422B]/30 rounded-xs">
-                ARCHIVE // 2025
+                {t('app_tagline')}
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#8A726C] mt-0.5">
@@ -75,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
                   }`}
                 >
                   <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#B8863B]' : 'text-[#8A726C]'}`} />
-                  <span className="font-serif-display">{item.label}</span>
+                  <span className="font-serif-display">{t(item.labelKey, item.defaultLabel)}</span>
                   {isActive && (
                     <span className="w-1 h-1 rounded-full bg-[#A8422B] shrink-0" />
                   )}
@@ -87,6 +90,26 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 shrink-0">
+          {/* Language Switch Button (English / Hindi) */}
+          <button
+            id="language-switch-button"
+            onClick={toggleLanguage}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#FAF7F2] hover:bg-[#F3ECE2] border border-[#B8863B]/40 hover:border-[#A8422B] transition-all rounded-xs text-xs shadow-xs cursor-pointer group"
+            title={t('lang_toggle_tooltip')}
+            aria-label="Switch language to Hindi / English"
+          >
+            <Languages className="w-3.5 h-3.5 text-[#A8422B] group-hover:rotate-12 transition-transform" />
+            <div className="flex items-center gap-1 font-mono text-[11px]">
+              <span className={`transition-colors ${language === 'en' ? 'text-[#882B16] font-bold' : 'text-[#8A726C]'}`}>
+                EN
+              </span>
+              <span className="text-[#B8863B]/40">/</span>
+              <span className={`transition-colors font-medium ${language === 'hi' ? 'text-[#882B16] font-bold' : 'text-[#8A726C]'}`}>
+                हिन्दी
+              </span>
+            </div>
+          </button>
+
           {/* Spatial Search Bar Button */}
           <button
             onClick={onOpenSearch}
@@ -94,9 +117,9 @@ export const Header: React.FC<HeaderProps> = ({
             title="Search Archive (⌘K)"
           >
             <Search className="w-3.5 h-3.5 text-[#B8863B]" />
-            <span className="hidden sm:inline font-medium">Search Archive</span>
+            <span className="hidden sm:inline font-medium">{t('search_archive')}</span>
             <kbd className="hidden sm:inline font-mono text-[9px] px-1 bg-[#F3ECE2] border border-[#B8863B]/30 text-[#8A726C] rounded-xs">
-              ⌘K
+              {t('search_k')}
             </kbd>
           </button>
 
@@ -105,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#F3ECE2] border border-[#B8863B]/30 rounded-xs text-xs">
               <BookOpen className="w-3.5 h-3.5 text-[#A8422B]" />
               <span className="font-mono text-[11px] font-medium text-[#1A2744]">
-                6 SITES // 6 ARTIFACTS
+                {t('sites_artifacts_count')}
               </span>
             </div>
 

@@ -2,7 +2,8 @@ import React, { useState, useRef, useMemo } from 'react';
 import IndiaMapData from '@svg-maps/india';
 import { HeritageLandmark, HistoricalJourney } from '../../types';
 import { hasHistoricalJourney, getJourneyByLandmarkId } from '../../data/historicalJourneys';
-import { Scroll, Sparkles, ZoomIn, ZoomOut, RotateCcw, Compass, MapPin } from 'lucide-react';
+import { Scroll, Sparkles, ZoomIn, ZoomOut, RotateCcw, Compass, Maximize2 } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Exact SVG viewBox coordinates (0 0 612 696) for each heritage monument in India
 export const LANDMARK_SVG_COORDINATES: Record<string, { x: number; y: number; stateId: string }> = {
@@ -29,7 +30,11 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
   onStartJourney,
   onUnavailableJourney,
 }) => {
-  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const { language, t, getLandmarkTranslation } = useLanguage();
+
+  // Generous default zoom level (1.22) so the map fills the empty space around the canvas
+  const DEFAULT_ZOOM = 1.22;
+  const [zoomLevel, setZoomLevel] = useState<number>(DEFAULT_ZOOM);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -43,11 +48,21 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
   }, [selectedLandmark]);
 
   // Handle zoom controls
-  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.3, 2.5));
-  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.3, 0.8));
+  const handleZoomIn = () => setZoomLevel((prev) => Math.min(Number((prev + 0.25).toFixed(2)), 3.0));
+  const handleZoomOut = () => setZoomLevel((prev) => Math.max(Number((prev - 0.25).toFixed(2)), 0.75));
   const handleResetView = () => {
-    setZoomLevel(1);
+    setZoomLevel(DEFAULT_ZOOM);
     setPanOffset({ x: 0, y: 0 });
+  };
+  const handleFitScreen = () => {
+    setZoomLevel(1.35);
+    setPanOffset({ x: 0, y: 0 });
+  };
+
+  // Wheel zoom handler
+  const handleWheel = (e: React.WheelEvent) => {
+    const delta = e.deltaY < 0 ? 0.08 : -0.08;
+    setZoomLevel((prev) => Math.min(Math.max(Number((prev + delta).toFixed(2)), 0.75), 3.0));
   };
 
   // Mouse pan handlers
@@ -90,6 +105,8 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
 
   const handleTouchEnd = () => setIsDragging(false);
 
+  const selectedLandmarkTranslation = selectedLandmark ? getLandmarkTranslation(selectedLandmark.id) : null;
+
   return (
     <div
       ref={containerRef}
@@ -101,7 +118,8 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative flex-1 w-full h-full bg-[#FAF7F2] overflow-hidden select-none cursor-grab active:cursor-grabbing pb-32 sm:pb-36"
+      onWheel={handleWheel}
+      className="relative flex-1 w-full h-full bg-[#FAF7F2] overflow-hidden select-none cursor-grab active:cursor-grabbing pb-16 lg:pb-2"
     >
       {/* Archival Parchment Texture Background */}
       <div
@@ -121,10 +139,10 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
         <div className="bg-[#FAF7F2]/95 border border-[#B8863B]/40 px-2.5 py-1 rounded-xs shadow-xs backdrop-blur-xs flex items-center gap-2 text-[#1A2744]">
           <Compass className="w-3.5 h-3.5 text-[#A8422B] animate-spin-slow" />
           <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-[#882B16]">
-            BHARAT // CARTOGRAPHIC SURVEY
+            {t('survey_title')}
           </span>
           <span className="text-[9px] font-mono text-[#8A726C] hidden sm:inline">
-            8°04'N – 37°06'N | 68°07'E – 97°25'E
+            {t('survey_coords')}
           </span>
         </div>
       </div>
@@ -134,36 +152,47 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
         <button
           onClick={handleZoomIn}
           className="p-1.5 hover:bg-[#F3ECE2] text-[#684300] hover:text-[#A8422B] rounded-xs transition-colors cursor-pointer"
-          title="Zoom In"
+          title={t('zoom_in')}
+          aria-label={t('zoom_in')}
         >
           <ZoomIn className="w-4 h-4" />
         </button>
         <button
           onClick={handleZoomOut}
           className="p-1.5 hover:bg-[#F3ECE2] text-[#684300] hover:text-[#A8422B] rounded-xs transition-colors cursor-pointer"
-          title="Zoom Out"
+          title={t('zoom_out')}
+          aria-label={t('zoom_out')}
         >
           <ZoomOut className="w-4 h-4" />
         </button>
         <button
           onClick={handleResetView}
           className="p-1.5 hover:bg-[#F3ECE2] text-[#684300] hover:text-[#A8422B] rounded-xs transition-colors cursor-pointer border-t border-[#B8863B]/20"
-          title="Reset View"
+          title={t('reset_view')}
+          aria-label={t('reset_view')}
         >
           <RotateCcw className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={handleFitScreen}
+          className="p-1.5 hover:bg-[#F3ECE2] text-[#684300] hover:text-[#A8422B] rounded-xs transition-colors cursor-pointer border-t border-[#B8863B]/20"
+          title={t('fit_map')}
+          aria-label={t('fit_map')}
+        >
+          <Maximize2 className="w-3.5 h-3.5" />
         </button>
       </div>
 
       {/* State Hover Badge (Bottom Left) */}
       {hoveredState && (
-        <div className="absolute bottom-24 left-4 z-20 pointer-events-none">
+        <div className="absolute bottom-20 left-4 z-20 pointer-events-none">
           <div className="px-2.5 py-1 bg-[#1A2744]/90 text-[#FFD9A9] text-[10px] font-mono tracking-wider uppercase border border-[#B8863B]/60 rounded-xs shadow-md backdrop-blur-xs">
-            TERRITORY // {hoveredState}
+            {t('territory_prefix')} {hoveredState}
           </div>
         </div>
       )}
 
-      {/* The Central Vector Map of India */}
+      {/* The Central Vector Map of India (Expanded to generously fill empty space) */}
       <div
         className="w-full h-full flex items-center justify-center transition-transform duration-100 ease-out"
         style={{
@@ -173,7 +202,7 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
       >
         <svg
           viewBox="0 0 612 696"
-          className="w-full h-full max-w-[700px] max-h-[82vh] drop-shadow-sm select-none"
+          className="w-full h-full max-w-[1000px] xl:max-w-[1250px] 2xl:max-w-[1450px] max-h-[92vh] lg:max-h-[95vh] drop-shadow-sm select-none"
           style={{ overflow: 'visible' }}
         >
           <defs>
@@ -215,7 +244,7 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
               fontWeight="bold"
               letterSpacing="3"
             >
-              ARABIAN SEA
+              {t('arabian_sea')}
             </text>
             <text
               x="62"
@@ -226,7 +255,7 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
               fontSize="8"
               letterSpacing="2"
             >
-              SINDHU SAGARA
+              {t('sindhu_sagara')}
             </text>
 
             {/* Bay of Bengal */}
@@ -240,7 +269,7 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
               fontWeight="bold"
               letterSpacing="3"
             >
-              BAY OF BENGAL
+              {t('bay_of_bengal')}
             </text>
             <text
               x="435"
@@ -251,7 +280,7 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
               fontSize="8"
               letterSpacing="2"
             >
-              PURVA SAMUDRA
+              {t('purva_samudra')}
             </text>
 
             {/* Indian Ocean */}
@@ -265,7 +294,7 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
               fontWeight="bold"
               letterSpacing="4"
             >
-              INDIAN OCEAN // RATNAKARA
+              {t('indian_ocean')}
             </text>
 
             {/* Region labels on subcontinent */}
@@ -279,7 +308,7 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
               letterSpacing="3"
               fontWeight="bold"
             >
-              ARYAVARTA // INDO-GANGETIC
+              {t('aryavarta')}
             </text>
             <text
               x="180"
@@ -291,7 +320,7 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
               letterSpacing="3"
               fontWeight="bold"
             >
-              DAKSHINAPATHA
+              {t('dakshinapatha')}
             </text>
             <text
               x="185"
@@ -303,7 +332,7 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
               letterSpacing="2"
               fontWeight="bold"
             >
-              KAVERI MANDALA
+              {t('kaveri_mandala')}
             </text>
           </g>
 
@@ -364,7 +393,6 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
               })
               .map((landmark) => {
                 const coords = LANDMARK_SVG_COORDINATES[landmark.id] || {
-                  // Fallback to proportional coordinates mapped to viewBox
                   x: (landmark.mapPosition.x / 100) * 612,
                   y: (landmark.mapPosition.y / 100) * 696,
                 };
@@ -372,6 +400,9 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
                 const isSelected = selectedLandmark?.id === landmark.id;
                 const hasJourney = hasHistoricalJourney(landmark.id);
                 const journey = getJourneyByLandmarkId(landmark.id);
+                const lTrans = getLandmarkTranslation(landmark.id);
+                const displayName = lTrans ? lTrans.shortName : landmark.name.split(' ')[0];
+                const tagBoxWidth = Math.max(displayName.length * (language === 'hi' ? 12 : 8.5) + 20, 52);
 
                 return (
                   <g
@@ -422,10 +453,10 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
                     <g transform="translate(0, 8)">
                       {/* Background Tag Box */}
                       <rect
-                        x={-(landmark.name.split(' ')[0].length * 4.2 + 10)}
+                        x={-(tagBoxWidth / 2)}
                         y="4"
-                        width={(landmark.name.split(' ')[0].length * 8.4 + 20)}
-                        height="18"
+                        width={tagBoxWidth}
+                        height="19"
                         rx="3"
                         fill={isSelected ? '#A8422B' : '#FAF7F2'}
                         stroke={isSelected ? '#882B16' : '#B8863B'}
@@ -436,14 +467,14 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
                       {/* Landmark Name */}
                       <text
                         x="0"
-                        y="16.5"
+                        y="17"
                         textAnchor="middle"
                         fill={isSelected ? '#FFFFFF' : '#191B21'}
-                        fontFamily="Cinzel, serif"
-                        fontSize="9.5"
+                        fontFamily={language === 'hi' ? '"Anek Devanagari", sans-serif' : 'Cinzel, serif'}
+                        fontSize={language === 'hi' ? '10' : '9.5'}
                         fontWeight="bold"
                       >
-                        {landmark.name.split(' ')[0]}
+                        {displayName}
                       </text>
                     </g>
 
@@ -452,7 +483,7 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
                         positioned cleanly just below their name. */}
                     {isSelected && (
                       <g
-                        transform="translate(0, 31)"
+                        transform="translate(0, 32)"
                         className="cursor-pointer group/journeybtn"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -472,10 +503,10 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
                             <title>Click to open Historical Journey Archives for {landmark.name}</title>
                             {/* Button pill background for active journey */}
                             <rect
-                              x="-66"
+                              x={language === 'hi' ? -72 : -66}
                               y="0"
-                              width="132"
-                              height="19"
+                              width={language === 'hi' ? 144 : 132}
+                              height="20"
                               rx="3"
                               fill="#1A2744"
                               stroke="#B8863B"
@@ -485,19 +516,19 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
                             />
 
                             {/* Small amber indicator dot */}
-                            <circle cx="-53" cy="9.5" r="2.5" fill="#FFD9A9" />
+                            <circle cx={language === 'hi' ? -59 : -53} cy="10" r="2.5" fill="#FFD9A9" />
 
                             {/* Button Text */}
                             <text
-                              x="-44"
-                              y="13"
+                              x={language === 'hi' ? -50 : -44}
+                              y="14"
                               fill="#FFD9A9"
-                              fontFamily="monospace"
-                              fontSize="8"
+                              fontFamily={language === 'hi' ? '"Anek Devanagari", sans-serif' : 'monospace'}
+                              fontSize={language === 'hi' ? '9' : '8'}
                               fontWeight="bold"
-                              letterSpacing="0.8"
+                              letterSpacing={language === 'hi' ? '0.2' : '0.8'}
                             >
-                              JOURNEY ARCHIVES ➔
+                              {t('journey_archives_btn')}
                             </text>
                           </>
                         ) : (
@@ -505,10 +536,10 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
                             <title>Historical Journey Archive for {landmark.dynasty} will be added soon</title>
                             {/* Button pill background for coming soon journey */}
                             <rect
-                              x="-80"
+                              x={language === 'hi' ? -75 : -80}
                               y="0"
-                              width="160"
-                              height="19"
+                              width={language === 'hi' ? 150 : 160}
+                              height="20"
                               rx="3"
                               fill="#FAF4EB"
                               stroke="#B8863B"
@@ -519,19 +550,19 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
                             />
 
                             {/* Subtle terracotta indicator dot */}
-                            <circle cx="-67" cy="9.5" r="2" fill="#882B16" />
+                            <circle cx={language === 'hi' ? -62 : -67} cy="10" r="2" fill="#882B16" />
 
                             {/* Button Text */}
                             <text
-                              x="-58"
-                              y="13"
+                              x={language === 'hi' ? -54 : -58}
+                              y="14"
                               fill="#882B16"
-                              fontFamily="monospace"
-                              fontSize="7.5"
+                              fontFamily={language === 'hi' ? '"Anek Devanagari", sans-serif' : 'monospace'}
+                              fontSize={language === 'hi' ? '8.5' : '7.5'}
                               fontWeight="bold"
-                              letterSpacing="0.5"
+                              letterSpacing={language === 'hi' ? '0.2' : '0.5'}
                             >
-                              ARCHIVE WILL BE ADDED SOON
+                              {t('archive_soon_btn')}
                             </text>
                           </>
                         )}
@@ -550,19 +581,19 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
           <div className="w-9 h-9 rounded-xs overflow-hidden shrink-0 border border-[#B8863B]/50">
             <img
               src={selectedLandmark.imageUrl}
-              alt={selectedLandmark.name}
+              alt={selectedLandmarkTranslation?.name || selectedLandmark.name}
               className="w-full h-full object-cover"
             />
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-[9px] font-mono text-[#A8422B] uppercase tracking-wider font-bold">
-              {selectedLandmark.dynasty}
+              {selectedLandmarkTranslation?.dynasty || selectedLandmark.dynasty}
             </span>
             <span className="font-serif-display text-xs font-semibold text-[#191B21] truncate">
-              {selectedLandmark.name}
+              {selectedLandmarkTranslation?.name || selectedLandmark.name}
             </span>
             <span className="text-[10px] font-sans-ui text-[#8A726C] truncate">
-              {selectedLandmark.region}
+              {selectedLandmarkTranslation?.region || selectedLandmark.region}
             </span>
           </div>
           {hasHistoricalJourney(selectedLandmark.id) && onStartJourney ? (
@@ -574,14 +605,14 @@ export const IndiaMapCanvas: React.FC<IndiaMapCanvasProps> = ({
               className="ml-auto shrink-0 px-2.5 py-1 bg-[#A8422B] text-white text-[9.5px] font-mono font-bold tracking-wider uppercase rounded-xs hover:bg-[#C25438] transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Scroll className="w-3 h-3 text-[#FFD9A9]" />
-              <span>Journey Archives</span>
+              <span>{t('journey_archives_short')}</span>
             </button>
           ) : (
             <button
               onClick={() => onUnavailableJourney && onUnavailableJourney(selectedLandmark)}
               className="ml-auto shrink-0 px-2 py-1 bg-[#F3ECE2] text-[#882B16] border border-[#B8863B]/40 text-[9px] font-mono font-bold tracking-wider uppercase rounded-xs hover:bg-[#FAF7F2] transition-colors cursor-pointer"
             >
-              <span>Archive Soon</span>
+              <span>{t('archive_soon_short')}</span>
             </button>
           )}
         </div>

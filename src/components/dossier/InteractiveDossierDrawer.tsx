@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { CoordinateChip } from '../common/CoordinateChip';
 import { EraBadge } from '../common/EraBadge';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface InteractiveDossierDrawerProps {
   landmark: HeritageLandmark | null;
@@ -34,12 +35,14 @@ export const InteractiveDossierDrawer: React.FC<InteractiveDossierDrawerProps> =
   onStartJourney,
   onUnavailableJourney,
 }) => {
+  const { language, t, getLandmarkTranslation } = useLanguage();
   const [activeTab, setActiveTab] = useState<'history' | 'architecture' | 'audio'>('history');
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   if (!landmark || drawerState === 'closed') return null;
 
   const availableJourney = getJourneyByLandmarkId(landmark.id);
+  const lTrans = getLandmarkTranslation(landmark.id);
 
   // Drawer height styles based on snap state
   const heightStyles = {
@@ -77,7 +80,7 @@ export const InteractiveDossierDrawer: React.FC<InteractiveDossierDrawerProps> =
           </div>
           <div className="flex items-center gap-1.5 text-[#8A726C]">
             <span className="text-[10px] font-mono uppercase tracking-wider font-semibold text-[#882B16]">
-              {drawerState === 'peek' ? 'Peek View' : 'Full View'}
+              {drawerState === 'peek' ? t('peek_view') : t('full_view')}
             </span>
             {drawerState === 'full' ? (
               <ChevronDown className="w-4 h-4 text-[#A8422B]" />
@@ -102,12 +105,12 @@ export const InteractiveDossierDrawer: React.FC<InteractiveDossierDrawerProps> =
       <div className="px-4 py-2 flex items-center justify-between gap-3 border-b border-[#B8863B]/15">
         <div className="flex-1 min-w-0 cursor-pointer" onClick={togglePeekFull}>
           <h2 className="font-serif-display text-lg font-bold text-[#191B21] truncate hover:text-[#882B16] transition-colors">
-            {landmark.name}
+            {lTrans?.name || landmark.name}
           </h2>
           <div className="flex items-center gap-2 mt-0.5 text-xs text-[#57423D]">
-            <span className="font-medium truncate">{landmark.dynasty}</span>
+            <span className="font-medium truncate">{lTrans?.dynasty || landmark.dynasty}</span>
             <span>•</span>
-            <span className="truncate">{landmark.region}</span>
+            <span className="truncate">{lTrans?.region || landmark.region}</span>
           </div>
         </div>
 
@@ -120,8 +123,8 @@ export const InteractiveDossierDrawer: React.FC<InteractiveDossierDrawerProps> =
               title="Begin Historical Journey with Rajaraja Chola I"
             >
               <Scroll className="w-3.5 h-3.5 text-[#FFD9A9]" />
-              <span className="hidden xs:inline">Begin Journey</span>
-              <span className="xs:hidden">Journey</span>
+              <span className="hidden xs:inline">{t('begin_journey')}</span>
+              <span className="xs:hidden">{t('journey_archives_short')}</span>
             </button>
           ) : (
             <button
@@ -129,7 +132,7 @@ export const InteractiveDossierDrawer: React.FC<InteractiveDossierDrawerProps> =
               className="px-2 py-1 bg-[#F3ECE2] hover:bg-[#FAF7F2] text-[#882B16] border border-[#B8863B]/40 text-[10px] font-mono font-bold tracking-wider uppercase rounded-xs transition-colors cursor-pointer"
               title="Journey archive will be added soon"
             >
-              <span>Archive Soon</span>
+              <span>{t('archive_soon_short')}</span>
             </button>
           )}
           {drawerState === 'peek' ? (
@@ -137,7 +140,7 @@ export const InteractiveDossierDrawer: React.FC<InteractiveDossierDrawerProps> =
               onClick={() => onStateChange('full')}
               className="px-2.5 py-1 bg-[#A8422B] text-white text-[11px] font-bold tracking-wider uppercase rounded-xs border border-[#882B16] hover:bg-[#C25438] flex items-center gap-1 transition-colors cursor-pointer"
             >
-              <span>Full View</span>
+              <span>{t('full_view')}</span>
               <ChevronUp className="w-3 h-3" />
             </button>
           ) : (
@@ -145,7 +148,7 @@ export const InteractiveDossierDrawer: React.FC<InteractiveDossierDrawerProps> =
               onClick={() => onStateChange('peek')}
               className="px-2.5 py-1 bg-[#F3ECE2] text-[#882B16] border border-[#B8863B]/40 text-[11px] font-bold tracking-wider uppercase rounded-xs hover:bg-[#FAF7F2] flex items-center gap-1 transition-colors cursor-pointer"
             >
-              <span>Peek View</span>
+              <span>{t('peek_view')}</span>
               <ChevronDown className="w-3 h-3" />
             </button>
           )}
@@ -166,7 +169,7 @@ export const InteractiveDossierDrawer: React.FC<InteractiveDossierDrawerProps> =
               }`}
             >
               <History className="w-3.5 h-3.5" />
-              <span>History</span>
+              <span>{t('tab_history')}</span>
             </button>
             <button
               onClick={() => setActiveTab('architecture')}
@@ -177,7 +180,7 @@ export const InteractiveDossierDrawer: React.FC<InteractiveDossierDrawerProps> =
               }`}
             >
               <Columns className="w-3.5 h-3.5" />
-              <span>Architecture</span>
+              <span>{t('tab_architecture')}</span>
             </button>
             <button
               onClick={() => setActiveTab('audio')}
@@ -188,7 +191,7 @@ export const InteractiveDossierDrawer: React.FC<InteractiveDossierDrawerProps> =
               }`}
             >
               <Volume2 className="w-3.5 h-3.5" />
-              <span>Audio Guide</span>
+              <span>{t('tab_audio')}</span>
             </button>
           </div>
 

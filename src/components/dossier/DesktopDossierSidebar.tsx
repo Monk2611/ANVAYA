@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { CoordinateChip } from '../common/CoordinateChip';
 import { EraBadge } from '../common/EraBadge';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface DesktopDossierSidebarProps {
   landmark: HeritageLandmark | null;
@@ -31,12 +32,14 @@ export const DesktopDossierSidebar: React.FC<DesktopDossierSidebarProps> = ({
   onStartJourney,
   onUnavailableJourney,
 }) => {
+  const { language, t, getLandmarkTranslation } = useLanguage();
   const [activeTab, setActiveTab] = useState<'history' | 'architecture' | 'audio'>('history');
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   if (!landmark) return null;
 
   const availableJourney = getJourneyByLandmarkId(landmark.id);
+  const lTrans = getLandmarkTranslation(landmark.id);
 
   return (
     <aside className="w-[410px] xl:w-[470px] h-full flex flex-col bg-[#FAF7F2] border-l border-[#B8863B]/30 shadow-xl shrink-0 overflow-hidden z-20 animate-fade-in">
@@ -68,10 +71,10 @@ export const DesktopDossierSidebar: React.FC<DesktopDossierSidebarProps> = ({
           <div>
             <span className="text-[10px] font-mono text-[#8A726C] uppercase tracking-wider flex items-center gap-1">
               <MapPin className="w-3 h-3 text-[#B8863B]" />
-              {landmark.region} • {landmark.dynasty}
+              {lTrans?.region || landmark.region} • {lTrans?.dynasty || landmark.dynasty}
             </span>
             <h2 className="font-serif-display text-xl font-bold text-[#191B21] leading-tight mt-0.5">
-              {landmark.name}
+              {lTrans?.name || landmark.name}
             </h2>
           </div>
           <CoordinateChip coordinates={landmark.coordinates.lat} />
@@ -86,7 +89,7 @@ export const DesktopDossierSidebar: React.FC<DesktopDossierSidebarProps> = ({
             >
               <span className="flex items-center gap-1.5">
                 <Scroll className="w-4 h-4 text-[#FFD9A9]" />
-                <span>Begin Historical Journey</span>
+                <span>{t('begin_journey')}</span>
               </span>
               <span className="text-[10px] font-mono bg-[#882B16] text-[#FFD9A9] px-2 py-0.5 rounded-xs">
                 +{availableJourney.totalXp} XP
@@ -95,13 +98,13 @@ export const DesktopDossierSidebar: React.FC<DesktopDossierSidebarProps> = ({
           ) : (
             <div className="flex items-center justify-between p-2 bg-[#F3ECE2] border border-[#B8863B]/30 rounded-xs">
               <span className="text-[11px] text-[#684300] font-mono flex items-center gap-1">
-                <Scroll className="w-3.5 h-3.5 text-[#B8863B]" /> Journey Archive in Curation
+                <Scroll className="w-3.5 h-3.5 text-[#B8863B]" /> {t('journey_in_curation')}
               </span>
               <button
                 onClick={() => onUnavailableJourney && onUnavailableJourney(landmark)}
-                className="text-[10px] font-mono font-bold text-[#A8422B] hover:underline"
+                className="text-[10px] font-mono font-bold text-[#A8422B] hover:underline cursor-pointer"
               >
-                Learn More
+                {t('learn_more')}
               </button>
             </div>
           )}
@@ -119,7 +122,7 @@ export const DesktopDossierSidebar: React.FC<DesktopDossierSidebarProps> = ({
           }`}
         >
           <History className="w-3.5 h-3.5" />
-          <span>History</span>
+          <span>{t('tab_history')}</span>
         </button>
         <button
           onClick={() => setActiveTab('architecture')}
@@ -130,7 +133,7 @@ export const DesktopDossierSidebar: React.FC<DesktopDossierSidebarProps> = ({
           }`}
         >
           <Columns className="w-3.5 h-3.5" />
-          <span>Architecture</span>
+          <span>{t('tab_architecture')}</span>
         </button>
         <button
           onClick={() => setActiveTab('audio')}
@@ -141,7 +144,7 @@ export const DesktopDossierSidebar: React.FC<DesktopDossierSidebarProps> = ({
           }`}
         >
           <Volume2 className="w-3.5 h-3.5" />
-          <span>Audio Guide</span>
+          <span>{t('tab_audio')}</span>
         </button>
       </div>
 

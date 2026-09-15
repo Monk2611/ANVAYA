@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScreenType } from '../../types';
-import { Map, Sparkles, Stamp, Hourglass, ScrollText } from 'lucide-react';
+import { Map, Sparkles, Hourglass, ScrollText } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface BottomNavControllerProps {
   currentScreen: ScreenType;
@@ -11,11 +12,13 @@ export const BottomNavController: React.FC<BottomNavControllerProps> = ({
   currentScreen,
   onSelectScreen,
 }) => {
-  const navItems: { id: ScreenType; label: string; icon: React.FC<{ className?: string }> }[] = [
-    { id: 'explore', label: 'Cartography', icon: Map },
-    { id: 'cultural', label: 'Culture', icon: Sparkles },
-    { id: 'chronology', label: 'Chronology', icon: Hourglass },
-    { id: 'dossiers', label: 'Dossier', icon: ScrollText },
+  const { t } = useLanguage();
+
+  const navItems: { id: ScreenType; labelKey: string; defaultLabel: string; icon: React.FC<{ className?: string }> }[] = [
+    { id: 'explore', labelKey: 'nav_cartography', defaultLabel: 'Cartography', icon: Map },
+    { id: 'cultural', labelKey: 'nav_culture', defaultLabel: 'Culture', icon: Sparkles },
+    { id: 'chronology', labelKey: 'nav_chronology', defaultLabel: 'Chronology', icon: Hourglass },
+    { id: 'dossiers', labelKey: 'nav_dossiers', defaultLabel: 'Dossier', icon: ScrollText },
   ];
 
   return (
@@ -29,7 +32,7 @@ export const BottomNavController: React.FC<BottomNavControllerProps> = ({
             <button
               key={item.id}
               onClick={() => onSelectScreen(item.id)}
-              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xs transition-all relative ${
+              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xs transition-all relative cursor-pointer ${
                 isActive
                   ? 'text-[#A8422B] font-bold'
                   : 'text-[#8A726C] hover:text-[#1A2744]'
@@ -46,7 +49,7 @@ export const BottomNavController: React.FC<BottomNavControllerProps> = ({
                 <Icon className="w-5 h-5" />
               </div>
               <span className="text-[10px] tracking-wider uppercase mt-0.5 font-mono">
-                {item.label}
+                {t(item.labelKey, item.defaultLabel)}
               </span>
             </button>
           );

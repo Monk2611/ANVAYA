@@ -1,26 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@100..800&family=Anek+Latin:wght@100..800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Anek Latin", system-ui, -apple-system, sans-serif;
-  --font-serif: "Anek Latin", system-ui, -apple-system, sans-serif;
-  --font-display: "Anek Latin", system-ui, -apple-system, sans-serif;
+  --font-sans: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
+  --font-serif: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
+  --font-display: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
   :root {
-    --font-display: "Anek Latin", system-ui, -apple-system, sans-serif;
-    --font-sans: "Anek Latin", system-ui, -apple-system, sans-serif;
-    --font-serif: "Anek Latin", system-ui, -apple-system, sans-serif;
+    --font-display: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
+    --font-sans: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
+    --font-serif: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
   }
 
   *, ::before, ::after {
-    font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
+    font-family: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
   }
 
   html,
   body {
-    font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
+    font-family: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
     background-color: #faf7f2;
     color: #191b21;
   }
@@ -33,20 +33,20 @@
   h6,
   .font-display,
   .font-serif-display {
-    font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
+    font-family: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
   }
 }
 
 .font-sans-ui {
-  font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
+  font-family: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
 }
 
 .font-serif-display {
-  font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
+  font-family: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
 }
 
 .font-serif {
-  font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
+  font-family: "Anek Devanagari", "Anek Latin", system-ui, -apple-system, sans-serif;
 }
 
 /* Archival typography tokens from Stitch Spec */

@@ -11,6 +11,7 @@ import { DossiersScreen } from './components/screens/DossiersScreen';
 import { HistoricalJourneyArchivesScreen } from './components/screens/HistoricalJourneyArchivesScreen';
 import { CulturalExplorerScreen } from './components/screens/CulturalExplorerScreen';
 import { HISTORICAL_JOURNEYS } from './data/historicalJourneys';
+import { LanguageProvider } from './context/LanguageContext';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('explore');
@@ -95,92 +96,94 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#191B21] flex flex-col font-sans-ui selection:bg-[#FFD7CE] selection:text-[#882B16]">
-      {/* Neo-Archival Spatial Header */}
-      <Header
-        activeScreenTitle={screenTitles[currentScreen]}
-        onOpenSearch={() => setIsSearchOpen(true)}
-        userXp={userXp}
-        currentScreen={currentScreen}
-        onScreenChange={(screen) => setCurrentScreen(screen)}
-      />
+    <LanguageProvider>
+      <div className="min-h-screen bg-[#FAF7F2] text-[#191B21] flex flex-col font-sans-ui selection:bg-[#FFD7CE] selection:text-[#882B16]">
+        {/* Neo-Archival Spatial Header */}
+        <Header
+          activeScreenTitle={screenTitles[currentScreen]}
+          onOpenSearch={() => setIsSearchOpen(true)}
+          userXp={userXp}
+          currentScreen={currentScreen}
+          onScreenChange={(screen) => setCurrentScreen(screen)}
+        />
 
-      {/* Main View Container */}
-      <main className="flex-1 flex flex-col relative overflow-x-hidden">
-        {currentScreen === 'explore' && (
-          <ExploreScreen
-            onOpenSearch={() => setIsSearchOpen(true)}
-            onOpenArtifacts={() => setCurrentScreen('cultural')}
-            selectedLandmarkId={selectedLandmarkId}
-            onStartJourney={(journey) => {
-              setActiveJourney(journey);
-              setCurrentScreen('journey-archives');
-            }}
-          />
-        )}
-        {currentScreen === 'cultural' && (
-          <CulturalExplorerScreen
-            exploredItemIds={exploredCulturalIds}
-            onExploreItem={handleAwardCulturalXp}
-            userXp={userXp}
-          />
-        )}
-        {currentScreen === 'vitrine' && <VitrineScreen />}
-        {currentScreen === 'passport' && <PassportScreen />}
-        {currentScreen === 'chronology' && (
-          <ChronologyScreen
-            onSelectLandmark={(landmarkId) => {
-              setSelectedLandmarkId(landmarkId);
-              setCurrentScreen('explore');
-            }}
-            onStartJourney={(journeyId) => {
-              const found = HISTORICAL_JOURNEYS.find((j) => j.id === journeyId);
-              if (found) {
-                setActiveJourney(found);
-              }
-              setCurrentScreen('journey-archives');
-            }}
-          />
-        )}
-        {currentScreen === 'dossiers' && (
-          <DossiersScreen
-            onSelectLandmark={(landmarkId) => {
-              setSelectedLandmarkId(landmarkId);
-              setCurrentScreen('explore');
-            }}
-          />
-        )}
-        {currentScreen === 'journey-archives' && (
-          <HistoricalJourneyArchivesScreen
-            journey={activeJourney || HISTORICAL_JOURNEYS[0]}
-            userXp={userXp}
-            unlockedBadges={unlockedBadges}
-            onBackToMap={() => {
-              setSelectedLandmarkId('brihadisvara-thanjavur');
-              setCurrentScreen('explore');
-            }}
-            onCompleteJourney={handleCompleteJourney}
-          />
-        )}
-      </main>
+        {/* Main View Container */}
+        <main className="flex-1 flex flex-col relative overflow-x-hidden">
+          {currentScreen === 'explore' && (
+            <ExploreScreen
+              onOpenSearch={() => setIsSearchOpen(true)}
+              onOpenArtifacts={() => setCurrentScreen('cultural')}
+              selectedLandmarkId={selectedLandmarkId}
+              onStartJourney={(journey) => {
+                setActiveJourney(journey);
+                setCurrentScreen('journey-archives');
+              }}
+            />
+          )}
+          {currentScreen === 'cultural' && (
+            <CulturalExplorerScreen
+              exploredItemIds={exploredCulturalIds}
+              onExploreItem={handleAwardCulturalXp}
+              userXp={userXp}
+            />
+          )}
+          {currentScreen === 'vitrine' && <VitrineScreen />}
+          {currentScreen === 'passport' && <PassportScreen />}
+          {currentScreen === 'chronology' && (
+            <ChronologyScreen
+              onSelectLandmark={(landmarkId) => {
+                setSelectedLandmarkId(landmarkId);
+                setCurrentScreen('explore');
+              }}
+              onStartJourney={(journeyId) => {
+                const found = HISTORICAL_JOURNEYS.find((j) => j.id === journeyId);
+                if (found) {
+                  setActiveJourney(found);
+                }
+                setCurrentScreen('journey-archives');
+              }}
+            />
+          )}
+          {currentScreen === 'dossiers' && (
+            <DossiersScreen
+              onSelectLandmark={(landmarkId) => {
+                setSelectedLandmarkId(landmarkId);
+                setCurrentScreen('explore');
+              }}
+            />
+          )}
+          {currentScreen === 'journey-archives' && (
+            <HistoricalJourneyArchivesScreen
+              journey={activeJourney || HISTORICAL_JOURNEYS[0]}
+              userXp={userXp}
+              unlockedBadges={unlockedBadges}
+              onBackToMap={() => {
+                setSelectedLandmarkId('brihadisvara-thanjavur');
+                setCurrentScreen('explore');
+              }}
+              onCompleteJourney={handleCompleteJourney}
+            />
+          )}
+        </main>
 
-      {/* Spatial Bottom Navigation Controller */}
-      <BottomNavController
-        currentScreen={currentScreen}
-        onSelectScreen={setCurrentScreen}
-      />
+        {/* Spatial Bottom Navigation Controller */}
+        <BottomNavController
+          currentScreen={currentScreen}
+          onSelectScreen={setCurrentScreen}
+        />
 
-      {/* Spatial Archive Search Bar Modal */}
-      <ArchiveSearchModal
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        onSelectLandmark={handleSelectLandmarkFromSearch}
-        onSelectArtifact={handleSelectArtifactFromSearch}
-        onSelectEra={handleSelectEraFromSearch}
-        onSelectCulturalItem={handleSelectCulturalItemFromSearch}
-        onSelectDossier={handleSelectDossierFromSearch}
-      />
-    </div>
+        {/* Spatial Archive Search Bar Modal */}
+        <ArchiveSearchModal
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+          onSelectLandmark={handleSelectLandmarkFromSearch}
+          onSelectArtifact={handleSelectArtifactFromSearch}
+          onSelectEra={handleSelectEraFromSearch}
+          onSelectCulturalItem={handleSelectCulturalItemFromSearch}
+          onSelectDossier={handleSelectDossierFromSearch}
+        />
+      </div>
+    </LanguageProvider>
   );
 }
 

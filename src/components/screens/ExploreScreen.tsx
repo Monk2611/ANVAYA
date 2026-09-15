@@ -7,6 +7,7 @@ import { EraBadge } from '../common/EraBadge';
 import { InteractiveDossierDrawer } from '../dossier/InteractiveDossierDrawer';
 import { DesktopDossierSidebar } from '../dossier/DesktopDossierSidebar';
 import { IndiaMapCanvas } from '../map/IndiaMapCanvas';
+import { useLanguage } from '../../context/LanguageContext';
 import {
   Layers,
   Crosshair,
@@ -33,6 +34,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
   selectedLandmarkId,
   onStartJourney,
 }) => {
+  const { language, t, getLandmarkTranslation } = useLanguage();
   const [selectedLandmark, setSelectedLandmark] = useState<HeritageLandmark | null>(
     HERITAGE_LANDMARKS[0]
   );
@@ -42,12 +44,12 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
   const [unavailableNotice, setUnavailableNotice] = useState<{ landmark: HeritageLandmark } | null>(null);
 
   const dynasticFilters = [
-    { id: 'all', label: 'All Dynasties' },
-    { id: 'chola', label: 'Chola & Dravidian', landmarkId: 'brihadisvara-thanjavur' },
-    { id: 'vijayanagara', label: 'Vijayanagara', landmarkId: 'hampi-vijayanagara' },
-    { id: 'rashtrakuta', label: 'Rashtrakuta & Deccan', landmarkId: 'kailasa-ellora' },
-    { id: 'ganga', label: 'Eastern Ganga', landmarkId: 'konark-sun-temple' },
-    { id: 'maurya', label: 'Maurya & Buddhist', landmarkId: 'sanchi-stupa' },
+    { id: 'all', labelKey: 'dynasty_all', defaultLabel: 'All Dynasties' },
+    { id: 'chola', labelKey: 'dynasty_chola', defaultLabel: 'Chola & Dravidian', landmarkId: 'brihadisvara-thanjavur' },
+    { id: 'vijayanagara', labelKey: 'dynasty_vijayanagara', defaultLabel: 'Vijayanagara', landmarkId: 'hampi-vijayanagara' },
+    { id: 'rashtrakuta', labelKey: 'dynasty_rashtrakuta', defaultLabel: 'Rashtrakuta & Deccan', landmarkId: 'kailasa-ellora' },
+    { id: 'ganga', labelKey: 'dynasty_ganga', defaultLabel: 'Eastern Ganga', landmarkId: 'konark-sun-temple' },
+    { id: 'maurya', labelKey: 'dynasty_maurya', defaultLabel: 'Maurya & Buddhist', landmarkId: 'sanchi-stupa' },
   ];
 
   // Sync with external selection from Search Archive
@@ -117,18 +119,20 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
     setUnavailableNotice({ landmark });
   };
 
+  const noticeTranslation = unavailableNotice ? getLandmarkTranslation(unavailableNotice.landmark.id) : null;
+
   return (
     <div className="relative w-full h-[calc(100vh-105px)] lg:h-[calc(100vh-53px)] overflow-hidden flex flex-col bg-[#FAF7F2]">
       {/* Top Filter Bar & Spatial Index */}
-      <div className="z-20 bg-[#FAF7F2]/90 backdrop-blur-sm border-b border-[#B8863B]/25 p-3 flex flex-col gap-2 shrink-0">
+      <div className="z-20 bg-[#FAF7F2]/90 backdrop-blur-sm border-b border-[#B8863B]/25 px-3 py-1.5 sm:py-2 flex flex-col gap-1.5 shrink-0">
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="label-caps text-[#A8422B] text-[10px] flex items-center gap-1 font-bold">
-              <Layers className="w-3.5 h-3.5 text-[#B8863B]" /> CARTOGRAPHIC CANVASES
+              <Layers className="w-3.5 h-3.5 text-[#B8863B]" /> {t('cartographic_canvases')}
             </span>
             <span className="text-[#8A726C] text-xs font-mono">
-              // {filteredLandmarks.length} MONUMENT{filteredLandmarks.length === 1 ? '' : 'S'}
-              {activeFilter !== 'all' && ` FILTERED`}
+              // {filteredLandmarks.length} {t('monuments_count', `${filteredLandmarks.length} MONUMENTS`)}
+              {activeFilter !== 'all' && ` (${t('filtered_status', 'FILTERED')})`}
             </span>
           </div>
 
@@ -138,17 +142,17 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
               <button
                 onClick={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
                 className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono rounded-xs border border-[#B8863B]/40 bg-[#F3ECE2] hover:bg-[#FAF7F2] text-[#882B16] transition-colors cursor-pointer"
-                title={isDesktopSidebarOpen ? 'Collapse Dossier Sidebar' : 'Expand Dossier Sidebar'}
+                title={isDesktopSidebarOpen ? t('hide_dossier') : t('view_dossier')}
               >
                 {isDesktopSidebarOpen ? (
                   <>
                     <PanelRightClose className="w-3.5 h-3.5 text-[#A8422B]" />
-                    <span>Hide Dossier</span>
+                    <span>{t('hide_dossier')}</span>
                   </>
                 ) : (
                   <>
                     <PanelRightOpen className="w-3.5 h-3.5 text-[#A8422B]" />
-                    <span>View Dossier</span>
+                    <span>{t('view_dossier')}</span>
                   </>
                 )}
               </button>
@@ -157,16 +161,16 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
             <button
               onClick={onOpenSearch}
               className="text-[11px] font-mono text-[#882B16] hover:underline flex items-center gap-1 bg-[#F3ECE2] px-2 py-0.5 rounded-xs border border-[#B8863B]/30 cursor-pointer"
-              title="Search all heritage sites"
+              title={t('search_archive')}
             >
               <Crosshair className="w-3.5 h-3.5 text-[#A8422B]" />
-              <span>SEARCH ARCHIVE</span>
+              <span>{t('search_archive')}</span>
             </button>
           </div>
         </div>
 
         {/* Filter Chips */}
-        <div className="max-w-7xl mx-auto w-full flex items-center gap-1.5 overflow-x-auto pb-1 subtle-scroll">
+        <div className="max-w-7xl mx-auto w-full flex items-center gap-1.5 overflow-x-auto pb-0.5 subtle-scroll">
           {dynasticFilters.map((f) => {
             const count =
               f.id === 'all'
@@ -191,7 +195,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
                 {f.id === 'chola' && (
                   <Scroll className="w-3 h-3 text-[#B8863B]" />
                 )}
-                <span>{f.label}</span>
+                <span>{t(f.labelKey, f.defaultLabel)}</span>
                 <span
                   className={`text-[9px] font-mono px-1 rounded-xs ${
                     activeFilter === f.id ? 'bg-[#882B16] text-[#FFD9A9]' : 'bg-[#FAF7F2] text-[#8A726C]'
@@ -214,7 +218,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
           <div className="flex-1 min-w-0 text-xs">
             <div className="flex items-center justify-between gap-2">
               <span className="font-mono font-bold text-[#882B16] uppercase text-[10.5px] tracking-wider">
-                ARCHIVAL CURATION NOTICE // {unavailableNotice.landmark.dynasty.toUpperCase()}
+                {t('archival_curation_notice')} // {(noticeTranslation?.dynasty || unavailableNotice.landmark.dynasty).toUpperCase()}
               </span>
               <button
                 onClick={() => setUnavailableNotice(null)}
@@ -225,11 +229,19 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
               </button>
             </div>
             <p className="text-[#191B21] mt-1.5 leading-relaxed">
-              The Historical Journey Archive for <strong>{unavailableNotice.landmark.name}</strong> ({unavailableNotice.landmark.region}) will be added soon. Epigraphical records, architectural models, and sovereign decision trees are currently being cataloged.
+              {language === 'hi' ? (
+                <>
+                  <strong>{noticeTranslation?.name || unavailableNotice.landmark.name}</strong> ({noticeTranslation?.region || unavailableNotice.landmark.region}) के लिए ऐतिहासिक यात्रा पुरालेख शीघ्र ही जोड़ा जाएगा। शिलालेख, वास्तुशिल्प मॉडल और संप्रभु निर्णय वृक्ष वर्तमान में सूचीबद्ध किए जा रहे हैं।
+                </>
+              ) : (
+                <>
+                  The Historical Journey Archive for <strong>{unavailableNotice.landmark.name}</strong> ({unavailableNotice.landmark.region}) will be added soon. Epigraphical records, architectural models, and sovereign decision trees are currently being cataloged.
+                </>
+              )}
             </p>
             <div className="mt-2.5 pt-2 border-t border-[#B8863B]/20 flex flex-wrap items-center justify-between gap-2">
               <span className="text-[10px] font-mono text-[#684300]">
-                Available Journey: Rajaraja Chola I (Tamil Nadu)
+                {language === 'hi' ? 'उपलब्ध यात्रा: राजराज चोल प्रथम (तमिलनाडु)' : 'Available Journey: Rajaraja Chola I (Tamil Nadu)'}
               </span>
               <button
                 onClick={() => {
@@ -239,7 +251,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
                 }}
                 className="px-2.5 py-1 bg-[#A8422B] hover:bg-[#C25438] text-white text-[10px] font-bold uppercase tracking-wider rounded-xs border border-[#882B16] transition-colors cursor-pointer flex items-center gap-1 shadow-xs"
               >
-                <span>Launch Chola Journey</span>
+                <span>{language === 'hi' ? 'चोल यात्रा आरंभ करें' : 'Launch Chola Journey'}</span>
                 <ArrowRight className="w-3 h-3" />
               </button>
             </div>
