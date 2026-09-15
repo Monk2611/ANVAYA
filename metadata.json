@@ -1,0 +1,6 @@
+{
+  "name": "Anvaya",
+  "description": "Mobile application focused on helping young people explore India's cultural heritage, history, traditions and regional diversity through interactive and gamified learning experiences.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

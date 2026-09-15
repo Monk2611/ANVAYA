@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-display: "Playfair Display", Georgia, serif;
+    --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #faf7f2;
+    color: #191b21;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+.font-sans-ui {
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+.font-serif-display {
+  font-family: "Playfair Display", Georgia, serif;
+}
+
+/* Archival typography tokens from Stitch Spec */
+.label-caps {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.label-mono-spatial {
+  font-family: "Plus Jakarta Sans", monospace, system-ui;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Vitrine & Stamp custom shapes */
+.octagonal-seal {
+  clip-path: polygon(
+    14% 0%,
+    86% 0%,
+    100% 14%,
+    100% 86%,
+    86% 100%,
+    14% 100%,
+    0% 86%,
+    0% 14%
+  );
+}
+
+.subtle-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.subtle-scroll::-webkit-scrollbar-thumb {
+  background: rgba(184, 134, 59, 0.25);
+  border-radius: 4px;
+}
+.subtle-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
