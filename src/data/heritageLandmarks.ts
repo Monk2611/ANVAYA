@@ -117,7 +117,7 @@ export const HERITAGE_LANDMARKS: HeritageLandmark[] = [
     builtCentury: 'Completed 1010 CE',
     patronRuler: 'Rajaraja Chola I',
     imageUrl:
-      'https://images.unsplash.com/photo-1621252179027-94459d278660?auto=format&fit=crop&w=1200&q=80',
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/09/83/04/d8/brihadeeshwara-temple.jpg?w=1200&h=1200&s=1',
     audioNarrativeTitle: 'The Granite Monoliths of Kaveri',
     audioDuration: '03:45',
     audioNarrativeExcerpt:
