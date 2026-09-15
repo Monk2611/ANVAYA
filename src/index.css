@@ -1,13 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Anek Latin", system-ui, -apple-system, sans-serif;
+  --font-serif: "Anek Latin", system-ui, -apple-system, sans-serif;
+  --font-display: "Anek Latin", system-ui, -apple-system, sans-serif;
+}
 
 @layer base {
   :root {
-    --font-display: "Playfair Display", Georgia, serif;
-    --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    --font-display: "Anek Latin", system-ui, -apple-system, sans-serif;
+    --font-sans: "Anek Latin", system-ui, -apple-system, sans-serif;
+    --font-serif: "Anek Latin", system-ui, -apple-system, sans-serif;
   }
 
+  *, ::before, ::after {
+    font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
+  }
+
+  html,
   body {
-    font-family: var(--font-sans);
+    font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
     background-color: #faf7f2;
     color: #191b21;
   }
@@ -16,22 +29,29 @@
   h2,
   h3,
   h4,
-  .font-display {
-    font-family: var(--font-display);
+  h5,
+  h6,
+  .font-display,
+  .font-serif-display {
+    font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
   }
 }
 
 .font-sans-ui {
-  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
 }
 
 .font-serif-display {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
+}
+
+.font-serif {
+  font-family: "Anek Latin", system-ui, -apple-system, sans-serif;
 }
 
 /* Archival typography tokens from Stitch Spec */
 .label-caps {
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: "Anek Latin", system-ui, sans-serif;
   font-size: 11px;
   font-weight: 700;
   line-height: 16px;
@@ -40,7 +60,7 @@
 }
 
 .label-mono-spatial {
-  font-family: "Plus Jakarta Sans", monospace, system-ui;
+  font-family: "Anek Latin", monospace, system-ui;
   font-size: 11px;
   font-weight: 500;
   line-height: 14px;
