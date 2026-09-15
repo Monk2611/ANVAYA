@@ -195,7 +195,7 @@ export const HERITAGE_LANDMARKS: HeritageLandmark[] = [
     builtCentury: 'Founded 427 CE',
     patronRuler: 'Kumaragupta I & Harsha',
     imageUrl:
-      'https://images.unsplash.com/photo-1592635196078-9fdc757f27f4?auto=format&fit=crop&w=1200&q=80',
+      'https://etimg.etb2bimg.com/photo/111107817.cms',
     audioNarrativeTitle: 'The Nine Storeys of Dharmaganja',
     audioDuration: '04:55',
     audioNarrativeExcerpt:
